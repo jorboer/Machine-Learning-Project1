@@ -88,11 +88,9 @@ def stochastic_gradient_descent(y, tx, initial_w, batch_size, max_iters, gamma):
 
 def least_squares(y, tx):
     A = np.dot(np.transpose(tx), tx)
-    B = np.linalg.inv(A)
-    C = np.dot(B, np.transpose(tx))
-    W = np.dot(C, y)
-    lowest_cost = compute_loss(y, tx, W)
-    return W, lowest_cost
+    W = np.linalg.solve(A, np.dot(np.transpose(tx),y))
+    MSE = compute_loss(y, tx, W)
+    return W, MSE
 
 
 #Helper method for polynomial regression and
@@ -133,10 +131,8 @@ def polynomial_regression(x, y):
 def ridge_regression(y, tx, lambda_):
     A = np.dot(np.transpose(tx), tx)
     B = np.dot(np.array(np.identity(len(A))), lambda_ * 2 * len(A))
-    C = np.linalg.inv(A + B)
-    D = np.dot(C, np.transpose(tx))
-    W = np.dot(D, y)
 
+    W = np.linalg.solve(A+B, np.transpose(tx).dot(y))
     MSE = compute_loss(y, tx, W)
     return W, MSE
 

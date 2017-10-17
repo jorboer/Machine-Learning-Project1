@@ -6,11 +6,9 @@ import least_squares as ls
 def ridge_regression(y, tx, lambda_):
     A = np.dot(np.transpose(tx), tx)
     B = np.dot(np.array(np.identity(len(A))), lambda_ * 2 * len(A))
-    C = np.linalg.inv(A + B)
-    D = np.dot(C, np.transpose(tx))
-    W = np.dot(D, y)
 
-    MSE = implementations.compute_loss(y, tx, W)
+    W = np.linalg.solve(A+B, np.transpose(tx).dot(y))
+    MSE = compute_loss(y, tx, W)
     return W, MSE
 
 def ridge_regression_demo(x, y, degree, ratio, seed):
