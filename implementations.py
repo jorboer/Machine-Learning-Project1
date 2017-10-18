@@ -1,14 +1,6 @@
 import numpy as np
 import math
-
-#Method to use if we need to standardize the data
-def standardize(x):
-    """Standardize the original data set."""
-    mean_x = np.mean(x)
-    x = x - mean_x
-    std_x = np.std(x)
-    x = x / std_x
-    return x, mean_x, std_x
+import helpers
 
 #Helper function for all three regression methods
 def compute_loss(y, tx, w):
