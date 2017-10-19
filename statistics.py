@@ -3,8 +3,8 @@ import numpy as np
 import helpers
 
 
-yb, input_data, ids = helpers.load_csv_data("train.csv")
-yb_test, input_data_test, ids_test = helpers.load_csv_data("test.csv")
+yb, input_data, ids = helpers.load_csv_data("C:\\Users\\magnu\\Documents\\NTNU\\3 (Utveksling EPFL)\\Machine Learning\\Prosjekt1\\Data\\train\\train.csv")
+#yb_test, input_data_test, ids_test = helpers.load_csv_data("C:\\Users\\magnu\\Documents\\NTNU\\3 (Utveksling EPFL)\\Machine Learning\\Prosjekt1\\Data\\train\\test.csv")
 
 higgs_bosons = []
 ids_higgs = []
@@ -56,7 +56,7 @@ teller = 1
 for i in range(len(variance_higgs)):
     print(teller, " ", variance_higgs[i], " ", variance_remainder[i])
     teller += 1
-
+"""
 correlation = []
 remainder = remainder[:len(higgs_bosons)]
 
@@ -67,4 +67,4 @@ print("\n\n\n")
 
 for i in range(len(higgs_bosons_transpose)):
     correlation.append(np.corrcoef(higgs_bosons_transpose[i],remainder_transpose[i]))
-    print(np.corrcoef(higgs_bosons_transpose[i],remainder_transpose[i]))
+    print(np.corrcoef(higgs_bosons_transpose[i],remainder_transpose[i]))"""
