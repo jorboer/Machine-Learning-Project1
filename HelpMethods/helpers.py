@@ -6,10 +6,14 @@ import numpy as np
 #Method to use if we need to standardize the data
 def standardize(x):
     """Standardize the original data set."""
-    mean_x = np.mean(x)
-    x = x - mean_x
-    std_x = np.std(x)
-    x = x / std_x
+    a = len(x[0])
+    mean_x = np.zeros(a)
+    std_x = np.zeros(a)
+    for i in range(a):
+        mean_x[i] = np.mean(x[:,i])
+        x[:,i] = x[:,i] - mean_x[i]
+        std_x[i] = np.std(x[:,i])
+        x[:,i] = x[:,i] / std_x[i]
     return x, mean_x, std_x
 
 def load_csv_data(data_path, sub_sample=False):

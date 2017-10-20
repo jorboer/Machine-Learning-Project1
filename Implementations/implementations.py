@@ -92,7 +92,6 @@ def build_poly(x, degree):
     matrices = np.zeros(len(x[0]))
     outmatrix = np.zeros((len(x), degree + 1))
     for i in range(degree + 1):
-        for j in range():
         outmatrix[:, i] = x**i
     return outmatrix
 
