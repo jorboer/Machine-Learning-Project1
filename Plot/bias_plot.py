@@ -1,7 +1,8 @@
-import numpy as np
-import matplotlib.pyplot as plt
-from implementations import split_data, compute_loss, build_poly, least_squares
 import helpers
+import matplotlib.pyplot as plt
+import numpy as np
+
+from Implementations.implementations import compute_loss, build_poly, least_squares
 
 yb, input_data, ids = helpers.load_csv_data("C:\\Users\\magnu\\Documents\\NTNU\\3 (Utveksling EPFL)\\Machine Learning\\Prosjekt1\\Data\\train\\train.csv")
 yb_test, input_data_test, ids_test = helpers.load_csv_data("C:\\Users\\magnu\\Documents\\NTNU\\3 (Utveksling EPFL)\\Machine Learning\\Prosjekt1\\Data\\test\\test.csv")

@@ -1,4 +1,5 @@
-import implementations
+from Implementations import implementations
+
 
 def stochastic_gradient_descent(y, tx, initial_w, batch_size, max_iters, gamma):
     ws = [initial_w]

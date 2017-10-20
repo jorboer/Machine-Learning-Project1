@@ -1,6 +1,8 @@
-import numpy as np
 import math
-import helpers
+
+from HelpMethods import helpers
+import numpy as np
+
 
 #Helper function for all three regression methods
 def compute_loss(y, tx, w):
@@ -87,8 +89,10 @@ def least_squares(y, tx):
 
 #Helper method for polynomial regression and
 def build_poly(x, degree):
+    matrices = np.zeros(len(x[0]))
     outmatrix = np.zeros((len(x), degree + 1))
     for i in range(degree + 1):
+        for j in range():
         outmatrix[:, i] = x**i
     return outmatrix
 
@@ -174,27 +178,23 @@ def ridge_regression_demo(x, y, degree, ratio, seed):
     """ridge regression demo."""
     # define parameter
     lambdas = np.logspace(-5, 0, 15)
-    # ***************************************************
+
     train_x, train_y, test_x, test_y = split_data(x, y, ratio, seed)
     # split the data, and return train and test data: TODO
-    # ***************************************************
+
     training = build_poly(train_x, degree)
     test = build_poly(test_x, degree)
-
-    weight_train, MSE_train = least_squares(train_y, training)
-    loss_test = compute_loss(test_y, test, weight_train)
     # form train and test data with polynomial basis function: TODO
-    # ***************************************************
+
     rmse_tr = []
     rmse_te = []
     for ind, lambda_ in enumerate(lambdas):
-        # ***************************************************
         weight_tr, MSE_tr = ridge_regression(train_y, training, lambda_)
         loss_test = compute_loss(test_y, test, weight_tr)
         rmse_tr.append((MSE_tr * 2) ** 0.5)
         rmse_te.append((loss_test * 2) ** 0.5)
         # ridge regression with a given lambda
-        # ***************************************************
+
         print("proportion={p}, degree={d}, lambda={l:.3f}, Training RMSE={tr:.3f}, Testing RMSE={te:.3f}".format(
             p=ratio, d=degree, l=lambda_, tr=rmse_tr[ind], te=rmse_te[ind]))
 

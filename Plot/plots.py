@@ -1,8 +1,7 @@
-import matplotlib.pyplot as plt
-import numpy as np
 import helpers
+import matplotlib.pyplot as plt
 
-data_path = "train.csv"
+data_path = "C:\\Users\\magnu\\Documents\\NTNU\\3 (Utveksling EPFL)\\Machine Learning\\Prosjekt1\\Data\\train\\train.csv"
 
 #load training data
 yb, input_data, ids = helpers.load_csv_data(data_path)
@@ -21,13 +20,13 @@ c1 = ['blue' if x == 1 else 'red' for x in yb]
 
 
 #for x1 in range(input_data.shape[1]):
-for x1 in range(1,2):
+for x1 in range(2,input_data.shape[1]):
     for x2 in range(input_data.shape[1]):
         plt.scatter(stand_data[:,x1], stand_data[:,x2], color=c1, s=0.2)
         plt.xlabel(x1+1)
         plt.ylabel(x2+1)
-        plt.savefig("C:\\Users\\magnu\\Documents\\NTNU\\3 (Utveksling EPFL)\\Machine Learning\\Prosjekt1\\Project1\\plots1\\"
-                    + str(x1) + "-" + str(x2) + " plot.png", dpi=200)
+        plt.savefig("C:\\Users\\magnu\\Documents\\NTNU\\3 (Utveksling EPFL)\\Machine Learning\\Prosjekt1\\Data\\plots1\\"
+                    + str(x1+1) + "-" + str(x2+1) + " plot.png", dpi=200)
         plt.clf()
 
 """yb, input_data, ids = helpers.load_csv_data("train.csv")

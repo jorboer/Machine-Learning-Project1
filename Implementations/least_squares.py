@@ -1,5 +1,5 @@
 import numpy as np
-import implementations
+
 
 def least_squares(y, tx):
     A = np.dot(np.transpose(tx), tx)

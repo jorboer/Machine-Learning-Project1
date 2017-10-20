@@ -1,6 +1,6 @@
 import numpy as np
-import implementations
-import least_squares as ls
+
+from Implementations import implementations, least_squares as ls
 
 
 def ridge_regression(y, tx, lambda_):
@@ -38,4 +38,3 @@ def ridge_regression_demo(x, y, degree, ratio, seed):
         # ***************************************************
         print("proportion={p}, degree={d}, lambda={l:.3f}, Training RMSE={tr:.3f}, Testing RMSE={te:.3f}".format(
             p=ratio, d=degree, l=lambda_, tr=rmse_tr[ind], te=rmse_te[ind]))
-

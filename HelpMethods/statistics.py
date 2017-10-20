@@ -1,7 +1,5 @@
-import matplotlib.pyplot as plt
 import numpy as np
-import helpers
-
+import numpy as np
 
 yb, input_data, ids = helpers.load_csv_data("C:\\Users\\magnu\\Documents\\NTNU\\3 (Utveksling EPFL)\\Machine Learning\\Prosjekt1\\Data\\train\\train.csv")
 #yb_test, input_data_test, ids_test = helpers.load_csv_data("C:\\Users\\magnu\\Documents\\NTNU\\3 (Utveksling EPFL)\\Machine Learning\\Prosjekt1\\Data\\train\\test.csv")

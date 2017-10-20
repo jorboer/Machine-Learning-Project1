@@ -1,4 +1,5 @@
-import implementations
+from Implementations import implementations
+
 
 #Helper function for gradient descent and stochastic gradient descent
 def gradient_descent(y, tx, initial_w, max_iters, gamma):
