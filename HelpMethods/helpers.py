@@ -16,6 +16,31 @@ def standardize(x):
         x[:,i] = x[:,i] / std_x[i]
     return x, mean_x, std_x
 
+def clean_matrice(x):
+    # Mean-adjust entries with -999. We adjust them to the mean of the column (without the -999 values)
+    means = np.zeros(len(x[0]))
+    number_of_entries = np.zeros(len(x[0]))
+    sums = np.zeros(len(x[0]))
+
+    # Summing over all values per column that are not -999
+    for j in range(len(means)):
+        for i in range(len(x)):
+            if (x[i][j] != -999):
+                sums[j] += x[i][j]
+                number_of_entries[j] += 1
+
+    #Calculating mean value for every column of x
+    for i in range(len(means)):
+        means[i] = (sums[i] / number_of_entries[i])
+
+    # Replacing -999 with the mean of the column
+    for j in range(len(means)):
+        for i in range(len(x)):
+            if (x[i][j] == -999):
+                x[i][j] = means[j]
+
+    return x
+
 def load_csv_data(data_path, sub_sample=False):
     """Loads data and returns y (class labels), tX (features) and ids (event ids)"""
     y = np.genfromtxt(data_path, delimiter=",", skip_header=1, dtype=str, usecols=1)

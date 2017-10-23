@@ -12,35 +12,21 @@ means = np.zeros(len(x_train[0]))
 number_of_entries = np.zeros(len(x_train[0]))
 sums = np.zeros(len(x_train[0]))
 
-print(x_train[1])
-
 #Summing over all values per column that are not -999
 for j in range(len(means)):
     for i in range(len(x_train)):
         if (x_train[i][j] != -999):
             sums[j] += x_train[i][j]
             number_of_entries[j] += 1
-    print(sums[j])
-    print(number_of_entries[j])
-    print("\n")
 
 for i in range(len(means)):
     means[i] = (sums[i]/number_of_entries[i])
-    print(means[i])
 
 #Replacing -999 with the mean of the column
 for j in range(len(means)):
     for i in range(len(x_train)):
         if (x_train[i][j] == -999):
             x_train[i][j] = means[j]
-
-#Standardizing the x-training data
-standardize_x, mean, std = helpers.standardize(x_train)
-
-print("\n")
-print(x_train[1])
-print("\n")
-print(standardize_x[1])
 
 
 """
