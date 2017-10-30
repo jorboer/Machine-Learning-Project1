@@ -1,85 +1,199 @@
-# -*- coding: utf-8 -*-
-"""some helper functions for project 1."""
-import csv
+"""
+Some helper methods used in our project.
+
+This file is divided into 4 sections:
+
+1. Helper methods for the regression functions (func 1-4). Begins on line 20
+2. Helper methods for the classification functions (func 5-6). Begins on line 68
+3. Model selection methods (Split data and Cross Validation). Begins on line 96
+4. Other helper methods. Begins on line 141
+"""
+
 import numpy as np
+import math
 
-#Method to use if we need to standardize the data
+from Implementations import implementations
+
+
+
+
+# HELPER METHODS FOR THE REGRESSION FUNCTIONS (FUNC 1-4)
+
+# function to compute the Mean Squared Error
+def compute_mse(y, tx, w):
+    e = y - np.dot(tx,w)
+    squared = e**2
+    mse = np.mean(squared)/2
+    return mse
+
+def compute_rmse(y, tx, w):
+    mse = compute_mse(y, tx, w)
+    return ((mse*2)**0.5)
+
+# function to compute the Mean Absolute Error
+def compute_mae(y,tx,w):
+    e = abs(y - np.dot(tx,w))
+    mae = np.mean(e)/2
+    return mae
+
+
+# computes the gradient, needed for Gradient Descent and Stochastic Gradient Descent (FUNC 3 and 4)
+def compute_gradient(y, tx, w):
+    e = y - np.dot(tx, w)
+    gradient = -(np.dot(tx.T, e))/len(e)
+    return gradient
+
+# helper method for Stochastic Gradient Descent
+def batch_iter(y, tx, batch_size, num_batches=1, shuffle=True):
+    # Generate a minibatch iterator for a dataset.
+    # Takes as input two iterables (here the output desired values 'y' and the input data 'tx').
+    # Outputs an iterator which gives mini-batches of `batch_size` matching elements from `y` and `tx`.
+    # Data can be randomly shuffled to avoid ordering in the original data messing with
+    # the randomness of the minibatches.
+    data_size = len(y)
+    if shuffle:
+        shuffle_indices = np.random.permutation(np.arange(data_size))
+        shuffled_y = y[shuffle_indices]
+        shuffled_tx = tx[shuffle_indices]
+    else:
+        shuffled_y = y
+        shuffled_tx = tx
+    for batch_num in range(num_batches):
+        start_index = batch_num * batch_size
+        end_index = min((batch_num + 1) * batch_size, data_size)
+        if start_index != end_index:
+            yield shuffled_y[start_index:end_index], shuffled_tx[start_index:end_index]
+
+
+# HELPER METHODS FOR THE CLASSIFICATION FUNCTIONS (FUNC 5 AND 6)
+
+# apply sigmoid function on t
+def sigmoid(t):
+    return np.exp(-np.logaddexp(0, -t))
+
+# compute the cost by negative log likelihood
+def compute_log_likelihood(y, tx, w):
+    vector = np.dot(tx, w)
+    first = np.logaddexp(0, vector)
+    second = y * vector
+    log_likelihood = np.sum(first - second)
+    return log_likelihood
+
+# compute the gradient of loss
+def compute_log_gradient(y, tx, w):
+    vector = np.dot(tx, w)
+    calc = sigmoid(vector) - y
+    gradient = tx.T.dot(calc)
+    return gradient
+
+# compute the loss and gradient of the Regularized Logistic Regression method (FUNCTION 6)
+def penalized_logistic_regression(y, tx, w, lambda_):
+    loss = compute_log_likelihood(y, tx, w)
+    gradient = compute_log_gradient(y, tx, w) + 2 * lambda_ * w
+    return loss, gradient
+
+
+# MODEL SELECTION METHODS (Split Data and Cross Validation)
+
+def split_data(x, y, ratio, seed=1):
+    np.random.seed(seed)
+    shuffled_indices = np.random.permutation(len(x))
+    training_data_x = x[shuffled_indices[: math.floor(len(x) * ratio)]]
+    training_data_y = y[shuffled_indices[: math.floor(len(x) * ratio)]]
+    test_data_x = x[shuffled_indices[math.floor(len(x) * ratio):]]
+    test_data_y = y[shuffled_indices[math.floor(len(x) * ratio):]]
+    return training_data_x, training_data_y, test_data_x, test_data_y
+
+# used in cross validation. Builds k_indices to the k_fold cross validation
+def build_k_indices(y, k_fold, seed):
+    num_row = y.shape[0]
+    interval = int(num_row / k_fold)
+    np.random.seed(seed)
+    indices = np.random.permutation(num_row)
+    k_indices = [indices[k * interval: (k + 1) * interval] for k in range(k_fold)]
+    return np.array(k_indices)
+
+# example where lambda_ and degree are the hyper parameters
+def cross_validation(y, x, k_indices, k, lambda_, degree):
+    loss_te = 0
+    for i in range(k):
+        # get k'th subgroup in test, others in train
+        test = k_indices[i]
+        tr = np.delete(k_indices, i, 0)
+        train = tr.ravel()
+
+        # split the data, and return train and test data:
+        test_x = x[test]
+        test_y = y[test]
+        train_x = x[train]
+        train_y = y[train]
+
+        # form data with polynomial degree
+        test = build_poly(test_x, degree)
+        training = build_poly(train_x, degree)
+
+        # implemented with ridge regression
+        weight_tr, MSE_tr = implementations.ridge_regression(train_y, training, lambda_)
+        loss_te += compute_rmse(test_y, test, weight_tr)
+    loss_te /= k
+    return loss_te
+
+
+# OTHER HELPER METHODS
+
+# standardizes the data. Returns the standardized input matrix.
 def standardize(x):
-    """Standardize the original data set."""
-    a = len(x[0])
-    mean_x = np.zeros(a)
-    std_x = np.zeros(a)
-    for i in range(a):
-        mean_x[i] = np.mean(x[:,i])
-        x[:,i] = x[:,i] - mean_x[i]
-        std_x[i] = np.std(x[:,i])
-        x[:,i] = x[:,i] / std_x[i]
-    return x, mean_x, std_x
+    return (x - np.mean(x, axis=0)) / np.std(x, axis=0)
 
-def clean_matrice(x):
-    # Mean-adjust entries with -999. We adjust them to the mean of the column (without the -999 values)
+
+# builds and returns a polynomial expansion in given degree of input x.
+def build_poly(x, degree):
+    polynomial_expansion = np.ones([len(x), 1])
+    for i in range(1, degree + 1):
+        x_temp = np.power(x, i)
+        polynomial_expansion = np.c_[polynomial_expansion, x_temp]
+    return polynomial_expansion
+
+
+# mean-adjust entries with -999. We adjust them to the mean of
+# the column (without the -999 values). Outputs the adjusted matrix
+def clean_matrix(x):
     means = np.zeros(len(x[0]))
     number_of_entries = np.zeros(len(x[0]))
     sums = np.zeros(len(x[0]))
 
-    # Summing over all values per column that are not -999
+    # summing over all values per column that are not -999
     for j in range(len(means)):
         for i in range(len(x)):
             if (x[i][j] != -999):
                 sums[j] += x[i][j]
                 number_of_entries[j] += 1
 
-    #Calculating mean value for every column of x
-    for i in range(len(means)):
-        means[i] = (sums[i] / number_of_entries[i])
+    # calculating mean value for every column of x
+    for j in range(len(means)):
+        means[j] = sums[j] / number_of_entries[j]
 
-    # Replacing -999 with the mean of the column
+    # replacing -999 with the mean of the column
     for j in range(len(means)):
         for i in range(len(x)):
             if (x[i][j] == -999):
                 x[i][j] = means[j]
-
     return x
 
-def load_csv_data(data_path, sub_sample=False):
-    """Loads data and returns y (class labels), tX (features) and ids (event ids)"""
-    y = np.genfromtxt(data_path, delimiter=",", skip_header=1, dtype=str, usecols=1)
-    x = np.genfromtxt(data_path, delimiter=",", skip_header=1)
-    ids = x[:, 0].astype(np.int)
-    input_data = x[:, 2:]
 
-    # convert class labels from strings to binary (-1,1)
-    yb = np.ones(len(y))
-    yb[np.where(y == 'b')] = -1
+# excludes features of the input matrix which has more -999 values than the given limit
+def exclude_features(features, limit):
+    nr_of_values = np.zeros(len(features[0]))
+    indexes_to_include = []
 
-    # sub-sample
-    if sub_sample:
-        yb = yb[::50]
-        input_data = input_data[::50]
-        ids = ids[::50]
+    # count number of -999 values in each feature
+    for col in range(len(features[0])):
+        for row in range(len(features)):
+            if features[row][col] == -999:
+                nr_of_values[col] += 1
 
-    return yb, input_data, ids
-
-
-def predict_labels(weights, data):
-    """Generates class predictions given weights, and a test data matrix"""
-    y_pred = np.dot(data, weights)
-    y_pred[np.where(y_pred <= 0)] = -1
-    y_pred[np.where(y_pred > 0)] = 1
-
-    return y_pred
-
-
-def create_csv_submission(ids, y_pred, name):
-    """
-    Creates an output file in csv format for submission to kaggle
-    Arguments: ids (event ids associated with each prediction)
-               y_pred (predicted class labels)
-               name (string name of .csv output file to be created)
-    """
-    with open(name, 'w') as csvfile:
-        fieldnames = ['Id', 'Prediction']
-        writer = csv.DictWriter(csvfile, delimiter=",", fieldnames=fieldnames)
-        writer.writeheader()
-        for r1, r2 in zip(ids, y_pred):
-            writer.writerow({'Id': int(r1), 'Prediction': int(r2)})
+    # append indexes of features which shall be outputted
+    for i, count in enumerate(nr_of_values):
+        if count < limit * len(features):
+            indexes_to_include.append(i)
+    return features[:, indexes_to_include]
