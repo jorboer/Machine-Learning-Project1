@@ -32,8 +32,14 @@ for hyper_param1 in hyper_params1:
         rmse_tmp = 0
         for i in range(k_fold):
             rmse_te = helpers.cross_validation(y_train, stand_train, k_indices, i, hyper_param1, hyper_param2)
+
+            #sums all the error (k times)
             rmse_tmp += rmse_te
+
+        #computes the average of the errors
         rmse_tmp /= k_fold
+
+        #updates best hyper parameters if the error is less than the best registered so far
         if (rmse_tmp < best_rmse):
             best_rmse = rmse_tmp
             best_hyperparam1 = hyper_param1

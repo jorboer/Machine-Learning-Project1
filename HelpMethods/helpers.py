@@ -115,27 +115,24 @@ def build_k_indices(y, k_fold, seed):
 
 # example where lambda_ and degree are the hyper parameters
 def cross_validation(y, x, k_indices, k, lambda_, degree):
-    loss_te = 0
-    for i in range(k):
-        # get k'th subgroup in test, others in train
-        test = k_indices[i]
-        tr = np.delete(k_indices, i, 0)
-        train = tr.ravel()
 
-        # split the data, and return train and test data:
-        test_x = x[test]
-        test_y = y[test]
-        train_x = x[train]
-        train_y = y[train]
+    # get k'th subgroup in test, others in train
+    testindex = k_indices[k]
+    trainindex = np.delete(k_indices, k, 0).ravel()
 
-        # form data with polynomial degree
-        test = build_poly(test_x, degree)
-        training = build_poly(train_x, degree)
+    # split the data, and return train and test data:
+    test_x = x[testindex]
+    test_y = y[testindex]
+    train_x = x[trainindex]
+    train_y = y[trainindex]
 
-        # implemented with ridge regression
-        weight_tr, MSE_tr = implementations.ridge_regression(train_y, training, lambda_)
-        loss_te += compute_rmse(test_y, test, weight_tr)
-    loss_te /= k
+    # form data with polynomial degree
+    training = build_poly(train_x, degree)
+    test = build_poly(test_x, degree)
+
+    # implemented with ridge regression
+    weight_tr, MSE_tr = implementations.ridge_regression(train_y, training, lambda_)
+    loss_te = compute_rmse(test_y, test, weight_tr)
     return loss_te
 
 

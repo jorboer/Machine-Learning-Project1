@@ -2,7 +2,7 @@ import numpy as np
 
 from HelpMethods import helpers
 
-#FUNCTION 1 - Lest Squares
+#FUNCTION 1 - Least Squares
 def least_squares(y, tx):
     tx_squared = np.dot(tx.T, tx)
     w = np.linalg.solve(tx_squared, np.dot(tx.T, y))

@@ -19,23 +19,28 @@ stand_train = helpers.standardize(train_x)
 stand_test = helpers.standardize(test_x)
 
 #Initializing lists of hyper-parameters we want to test
-hyper_params1 = []
-hyper_params2 = []
+degrees = []
+hyper_params = []
 
 #Initializing decision variables
 best_rmse = 1000000
-best_hyperparam1 = -1
-best_hyperparam2 = -1
+best_degree = -1
+best_hyperparam = -1
 
 
 # grid search for best combination of hyperparameters. Can be extended with more for loops.
 # change "REGRESSION_METHOD" with desired method.
-for hyper_param1 in hyper_params1:
-    #hyper_param1 was often degree, and we did polynomial expansion here
-    for hyper_param2 in hyper_params2:
-        weights, mse = REGRESSION_METHOD(train_y, stand_train, hyper_param1)
-        rmse_tmp = helpers.compute_rmse(test_y, stand_test, weights)
+for degree in degrees:
+    #building polynomials
+    train = helpers.build_poly(stand_train, degree)
+    test = helpers.build_poly(stand_test, degree)
+    for hyper_param in hyper_params:
+        #computes the weights with a regression method and calculates the loss.
+        weights, mse = REGRESSION_METHOD(train_y, train, hyper_param)
+        rmse_tmp = helpers.compute_rmse(test_y, test, weights)
+
+        #updates best hyper parameters if the error is less than the best registered so far.
         if (rmse_tmp < best_rmse):
             best_rmse = rmse_tmp
-            best_hyperparam1 = hyper_param1
-            best_hyperparam2 = hyper_param2
+            best_degree = degree
+            best_hyperparam = hyper_param
