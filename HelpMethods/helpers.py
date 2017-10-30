@@ -197,3 +197,8 @@ def exclude_features(features, limit):
         if count < limit * len(features):
             indexes_to_include.append(i)
     return features[:, indexes_to_include]
+
+# takes a data set and a list of indexes and removes features with these indexes from the data set.
+# Returns the rest
+def remove_features(features,remove_featurelist):
+    return np.delete(features, remove_featurelist, 0)
